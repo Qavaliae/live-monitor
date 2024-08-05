@@ -13,6 +13,6 @@ jobs:
     steps:
       - name: Monitor adorsys verifier
         run: |
-          curl 'https://eudiwverifier.solutions.adorsys.com/api/v1/auth-request/generic-offer'\
-          -X POST -H 'Content-Type: application/json'\
+          curl 'https://eudiwverifier.solutions.adorsys.com/api/v1/auth-request/generic-offer' \
+          -X POST -H 'Content-Type: application/json' \
           --data-raw '{"result_uri":"https://kcv-portal.solutions.adorsys.com/status?role=Employee","required_claims":["given_name","family_name",""],"response_mode":"direct_post","issuer_vct":"https://credentials.example.com/identity_credential"}'
