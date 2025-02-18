@@ -22,7 +22,8 @@ This system integrates real-time health checks and resource monitoring for the D
     ```
 
 ### Metrics Enpoint
-- **Route:** `/metrics`
+
+- Route: `/metrics`
 - **Description:**  Exposes Prometheus-compatible metrics, which are scraped by Prometheus for monitoring.
 - **Response:** Raw Prometheus metrics data (e.g., CPU, memory usage).
 
