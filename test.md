@@ -15,11 +15,11 @@ This system integrates real-time health checks and resource monitoring for the D
 - **Route:** `/health`
 - **Description:** Checks the server's operational status.
 - **Response:**
-```json
-{
-    "Status": "OK"
-}
-```
+    ```json
+    {
+        "Status": "OK"
+    }
+    ```
 
 ### Metrics Enpoint
 - **Route:** `/metrics`
