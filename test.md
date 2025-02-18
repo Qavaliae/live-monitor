@@ -10,16 +10,10 @@ This system integrates real-time health checks and resource monitoring for the D
 - **Prometheus Metrics**: Collect and scrape system and application-level metrics.
 - **Grafana Dashboad**: Visualize metrics and track performance.
 - **Automated Alert**: Receive notifications for system anomalies like high CPU usage or slow API responses.
-#
+
 ### Server Endpoints
 - **Route:** `/health`
 - **Description:** Checks the server's operational status.
-- **Response:**
-    ```json
-    {
-        "Status": "OK"
-    }
-    ```
 
 ### Metrics Enpoint
 
