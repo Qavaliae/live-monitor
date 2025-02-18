@@ -17,7 +17,7 @@ This system integrates real-time health checks and resource monitoring for the D
 - **Response:**
     ```json
     {
-        "Status": "OK",
+        "Status": "OK"
     }
     ```
 
