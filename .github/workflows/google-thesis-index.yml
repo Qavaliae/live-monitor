@@ -15,19 +15,27 @@ jobs:
       - name: Check if thesis is indexed by Google
         id: check
         run: |
-          HTML=$(curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" \
-            "https://www.google.com/search?q=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("site:hal.science \"parallel algorithms for predicting rna structure\""))')")
+          QUERY=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("site:hal.science \"parallel algorithms for predicting rna structure\""))')
+          HTML=$(curl -sL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" \
+            -H "Accept-Language: en-US,en;q=0.9" \
+            "https://www.google.com/search?q=${QUERY}&num=10")
           echo "$HTML" > page.html
-          if grep -qiE 'hal\.science|did not match any documents|No results found' page.html && ! grep -qiE 'did not match any documents|No results found' page.html; then
+
+          # Indexed only when an actual result for the phrase appears in the SERP.
+          # Google echoes the query (including the phrase) near the top, so a naive
+          # grep matches even when nothing is indexed. We detect a real result by
+          # looking for a result URL link AND the phrase, case-insensitively.
+          if grep -oE 'https://[^"& ]*' page.html | grep -qi '/url?q=\|hal\.science' \
+              && grep -qi 'parallel algorithms for predicting rna structure' page.html; then
             echo "indexed=true" >> "$GITHUB_OUTPUT"
             echo "Thesis appears indexed."
           else
             echo "indexed=false" >> "$GITHUB_OUTPUT"
-            echo "Thesis not indexed yet."
+            echo "Thesis not indexed yet (or Google blocked the check)."
           fi
 
       - name: Notify Telegram when thesis is indexed
-        if: steps.check.outputs.indexed == 'false'
+        if: steps.check.outputs.indexed == 'true'
         run: |
           BOT="${TELEGRAM_CHANNEL%%|*}"
           CHAT="${TELEGRAM_CHANNEL##*|}"
