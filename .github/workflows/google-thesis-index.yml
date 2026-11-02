@@ -1,0 +1,36 @@
+name: Monitor (Google Thesis Index)
+
+on:
+  workflow_dispatch: null
+  push: null
+  schedule:
+    - cron: '0 */3 * * *'
+
+jobs:
+  check-index:
+    runs-on: ubuntu-latest
+    env:
+      TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+    steps:
+      - name: Check if thesis is indexed by Google
+        id: check
+        run: |
+          HTML=$(curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" \
+            "https://www.google.com/search?q=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("site:hal.science \"parallel algorithms for predicting rna structure\""))')")
+          echo "$HTML" > page.html
+          if grep -qiE 'hal\.science|did not match any documents|No results found' page.html && ! grep -qiE 'did not match any documents|No results found' page.html; then
+            echo "indexed=true" >> "$GITHUB_OUTPUT"
+            echo "Thesis appears indexed."
+          else
+            echo "indexed=false" >> "$GITHUB_OUTPUT"
+            echo "Thesis not indexed yet."
+          fi
+
+      - name: Notify Telegram when thesis is indexed
+        if: steps.check.outputs.indexed == 'false'
+        run: |
+          BOT="${TELEGRAM_CHANNEL%%|*}"
+          CHAT="${TELEGRAM_CHANNEL##*|}"
+          curl -s -X POST "https://api.telegram.org/${BOT}/sendMessage" \
+            -d chat_id="${CHAT}" \
+            -d text='✅ Your thesis is now indexed by Google! Query: site:hal.science "parallel algorithms for predicting rna structure"'
