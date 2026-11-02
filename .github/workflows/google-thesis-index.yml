@@ -15,7 +15,7 @@ jobs:
       - name: Check if thesis is indexed by Google
         id: check
         run: |
-          QUERY=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("site:hal.science \"parallel algorithms for predicting rna structure\""))')
+          QUERY=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("site:hal.science \"structural parameters, tight bounds, and parameterized approximation\""))')
           HTML=$(curl -sL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" \
             -H "Accept-Language: en-US,en;q=0.9" \
             "https://www.google.com/search?q=${QUERY}&num=10")
@@ -26,7 +26,7 @@ jobs:
           # grep matches even when nothing is indexed. We detect a real result by
           # looking for a result URL link AND the phrase, case-insensitively.
           if grep -oE 'https://[^"& ]*' page.html | grep -qi '/url?q=\|hal\.science' \
-              && grep -qi 'parallel algorithms for predicting rna structure' page.html; then
+              && grep -qi 'structural parameters, tight bounds, and parameterized approximation' page.html; then
             echo "indexed=true" >> "$GITHUB_OUTPUT"
             echo "Thesis appears indexed."
           else
